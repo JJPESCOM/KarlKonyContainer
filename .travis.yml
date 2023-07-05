@@ -1,0 +1,25 @@
+language: ruby
+services:
+  - docker
+
+before_install:
+  - docker pull coedl/elpis:latest
+
+script:
+  - docker run --rm --entrypoint='' coedl/elpis:latest sh -c "
+      export RESULT=\$?;
+      export GIT_BRANCH=cnc;
+      export COVERALLS_REPO_TOKEN=$COVERALLS_REPO_TOKEN;
+      ls /;
+      git pull origin cnc; 
+      git checkout -b cnc;
+      sh ./elpis/test/test.sh;
+      pwd;
+      ls;
+      echo 'Now installing things';
+      pip install coveralls pytest-cov;
+      py.test -v --cov=elpis --cov-report=term-missing;
+      coveralls;
+      exit \$RESULT
+    "
+
